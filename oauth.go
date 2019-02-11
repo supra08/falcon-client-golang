@@ -26,7 +26,7 @@ func New(falconClientId, falconClientSecret, falconUrlAccessToken, falconUrlReso
 		Scopes:       []string{"email", "image_url", "organization"},
 		Endpoint: oauth2.Endpoint{
 			AuthURL:  "https://provider.com/o/oauth2/auth",
-			TokenURL: "http://falcon.sdslabs.local/access_token",
+			TokenURL: "http://falcon.sdslabs.co/access_token",
 		},
 	}
 
