@@ -13,13 +13,25 @@ type falconConfig struct {
 	falconClientId string,
 	falconClientSecret string,
 	falconUrlAccessToken string,
-	falconUrlResourceOwnerToken string,
+	falconUrlResourceOwner string,
 	falconAccountsUrl string
 }
 
-func New(falconClientId, falconClientSecret, falconUrlAccessToken, falconResourceOwnerToken, falconAccountsUrl string) falconConfig {
-	config := falconConfig {falconClientId, falconClientSecret, falconUrlAccessToken, falconResourceOwnerToken, falconAccountsUrl}
-	return config
+func Init(falconClientId, falconClientSecret, falconUrlAccessToken, falconUrlResourceOwner, falconAccountsUrl string) falconConfig {
+	config := falconConfig {falconClientId, falconClientSecret, falconUrlAccessToken, falconUrlResourceOwner, falconAccountsUrl}
+	
+	var credentials = &oauth2.Config{
+	RedirectURL:  "",
+	ClientID:     falconClientId,
+	ClientSecret: falconClientSecret,
+	Scopes:       []string{"email", "image_url", "organization"},
+	Endpoint: oauth2.Endpoint{
+		AuthURL:  "https://provider.com/o/oauth2/auth",
+		TokenURL: "http://falcon.sdslabs.local/access_token",
+		},
+	}
+
+	return config, credentials
 }
 
 // func parseJSON(path string) (map[string]interface{}, error) {
@@ -37,22 +49,13 @@ func New(falconClientId, falconClientSecret, falconUrlAccessToken, falconResourc
 
 // var config, _ = parseJSON("config.json")
 
-var credentials = &oauth2.Config{
-	RedirectURL:  "",
-	ClientID:     config["falcon_client_id"].(string),
-	ClientSecret: config["falcon_client_secret"].(string),
-	Scopes:       []string{"email", "image_url", "organization"},
-	Endpoint: oauth2.Endpoint{
-		AuthURL:  "https://provider.com/o/oauth2/auth",
-		TokenURL: "http://falcon.sdslabs.local/access_token",
-	},
-}
 
-var resourceOwnerDetailsUrl string = config["falcon_url_resource_owner_details"].(string)
-var accounts_url string = config["falcon_accounts_url"].(string)
+
+// var falconConfig.falconUrlResourceOwner string = config["falcon_url_resource_owner_details"].(string)
+// var falconConfig.falconAccountsUrl string = config["falcon_falconConfig.falconAccountsUrl"].(string)
 var COOKIE_NAME string = "sdslabs"
 
-func MakeRequest(url string, token *oauth2.Token) ([]byte, error) {
+func makeRequest(url string, token *oauth2.Token) ([]byte, error) {
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -75,46 +78,46 @@ func MakeRequest(url string, token *oauth2.Token) ([]byte, error) {
 	return contents, nil
 }
 
-func GetUserById(id string) ([]byte, error) {
+func GetUserById(id string, config falconConfig, credentials &oauth2.Config) ([]byte, error) {
 	token, err := credentials.Exchange(context.Background(), id)
 	if err != nil {
 		return nil, fmt.Errorf("code exchange wrong: %s", err.Error())
 	}
 
-	user_data, err := MakeRequest(resourceOwnerDetailsUrl+`/`+id, token)
+	user_data, err := makeRequest(config.falconUrlResourceOwner+`/`+id, token)
 	if err != nil {
 		return nil, fmt.Errorf("failed getting user info: %s", err.Error())
 	}
 	return user_data, nil
 }
 
-func GetUserByUsername(username string) ([]byte, error) {
+func GetUserByUsername(username string, config falconConfig, credentials &oauth2.Config) ([]byte, error) {
 	token, err := credentials.Exchange(context.Background(), username)
 	if err != nil {
 		return nil, fmt.Errorf("code exchange wrong: %s", err.Error())
 	}
 
-	user_data, err := MakeRequest(resourceOwnerDetailsUrl+`/username/`+username, token)
+	user_data, err := makeRequest(config.falconUrlResourceOwner+`/username/`+username, token)
 	if err != nil {
 		return nil, fmt.Errorf("failed getting user info: %s", err.Error())
 	}
 	return user_data, nil
 }
 
-func GetUserByEmail(email string) ([]byte, error) {
+func GetUserByEmail(email string, config falconConfig, credentials &oauth2.Config) ([]byte, error) {
 	token, err := credentials.Exchange(context.Background(), email)
 	if err != nil {
 		return nil, fmt.Errorf("code exchange wrong: %s", err.Error())
 	}
 
-	user_data, err := MakeRequest(resourceOwnerDetailsUrl+`/email/`+email, token)
+	user_data, err := makeRequest(config.falconUrlResourceOwner+`/email/`+email, token)
 	if err != nil {
 		return nil, fmt.Errorf("failed getting user info: %s", err.Error())
 	}
 	return user_data, nil
 }
 
-func GetLoggedInUser(cookies map[string][]string) ([]byte, error) {
+func GetLoggedInUser(cookies map[string][]string, config falconConfig, credentials &oauth2.Config) ([]byte, error) {
 	// hash := cookies[COOKIE_NAME]
 	var hash string = ""
 	if hash == "" {
@@ -126,21 +129,21 @@ func GetLoggedInUser(cookies map[string][]string) ([]byte, error) {
 		return nil, fmt.Errorf("code exchange wrong: %s", err.Error())
 	}
 
-	user_data, err := MakeRequest(resourceOwnerDetailsUrl+`/logged_in_user/`+hash, token)
+	user_data, err := makeRequest(config.falconUrlResourceOwner+`/logged_in_user/`+hash, token)
 	if err != nil {
 		return nil, fmt.Errorf("failed getting user info: %s", err.Error())
 	}
 	return user_data, nil
 }
 
-func Login(cookies map[string][]string, w http.ResponseWriter, r *http.Request) ([]byte, error) {
+func Login(cookies map[string][]string, config falconConfig, credentials &oauth2.Config, w http.ResponseWriter, r *http.Request) ([]byte, error) {
 	user_data, err := GetLoggedInUser(cookies)
 	if err != nil {
 		return nil, fmt.Errorf("failed to login with given credentials: %s", err.Error())
 	}
 
 	if user_data == nil {
-		http.Redirect(w, r, accounts_url+`/login?redirect=//`, http.StatusTemporaryRedirect)
+		http.Redirect(w, r, falconConfig.falconAccountsUrl+`/login?redirect=//`, http.StatusTemporaryRedirect)
 	}
 	return user_data, nil
 }
