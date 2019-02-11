@@ -10,24 +10,24 @@ import (
 )
 
 type falconConfig struct {
-	falconClientId string,
-	falconClientSecret string,
-	falconUrlAccessToken string,
-	falconUrlResourceOwner string,
-	falconAccountsUrl string
+	falconClientId         string
+	falconClientSecret     string
+	falconUrlAccessToken   string
+	falconUrlResourceOwner string
+	falconAccountsUrl      string
 }
 
 func Init(falconClientId, falconClientSecret, falconUrlAccessToken, falconUrlResourceOwner, falconAccountsUrl string) falconConfig {
-	config := falconConfig {falconClientId, falconClientSecret, falconUrlAccessToken, falconUrlResourceOwner, falconAccountsUrl}
-	
+	config := falconConfig{falconClientId, falconClientSecret, falconUrlAccessToken, falconUrlResourceOwner, falconAccountsUrl}
+
 	var credentials = &oauth2.Config{
-	RedirectURL:  "",
-	ClientID:     falconClientId,
-	ClientSecret: falconClientSecret,
-	Scopes:       []string{"email", "image_url", "organization"},
-	Endpoint: oauth2.Endpoint{
-		AuthURL:  "https://provider.com/o/oauth2/auth",
-		TokenURL: "http://falcon.sdslabs.local/access_token",
+		RedirectURL:  "",
+		ClientID:     falconClientId,
+		ClientSecret: falconClientSecret,
+		Scopes:       []string{"email", "image_url", "organization"},
+		Endpoint: oauth2.Endpoint{
+			AuthURL:  "https://provider.com/o/oauth2/auth",
+			TokenURL: "http://falcon.sdslabs.local/access_token",
 		},
 	}
 
@@ -48,8 +48,6 @@ func Init(falconClientId, falconClientSecret, falconUrlAccessToken, falconUrlRes
 // }
 
 // var config, _ = parseJSON("config.json")
-
-
 
 // var falconConfig.falconUrlResourceOwner string = config["falcon_url_resource_owner_details"].(string)
 // var falconConfig.falconAccountsUrl string = config["falcon_falconConfig.falconAccountsUrl"].(string)
@@ -78,7 +76,7 @@ func makeRequest(url string, token *oauth2.Token) ([]byte, error) {
 	return contents, nil
 }
 
-func GetUserById(id string, config falconConfig, credentials &oauth2.Config) ([]byte, error) {
+func GetUserById(id string, config falconConfig, credentials *oauth2.Config) ([]byte, error) {
 	token, err := credentials.Exchange(context.Background(), id)
 	if err != nil {
 		return nil, fmt.Errorf("code exchange wrong: %s", err.Error())
@@ -91,7 +89,7 @@ func GetUserById(id string, config falconConfig, credentials &oauth2.Config) ([]
 	return user_data, nil
 }
 
-func GetUserByUsername(username string, config falconConfig, credentials &oauth2.Config) ([]byte, error) {
+func GetUserByUsername(username string, config falconConfig, credentials *oauth2.Config) ([]byte, error) {
 	token, err := credentials.Exchange(context.Background(), username)
 	if err != nil {
 		return nil, fmt.Errorf("code exchange wrong: %s", err.Error())
@@ -104,7 +102,7 @@ func GetUserByUsername(username string, config falconConfig, credentials &oauth2
 	return user_data, nil
 }
 
-func GetUserByEmail(email string, config falconConfig, credentials &oauth2.Config) ([]byte, error) {
+func GetUserByEmail(email string, config falconConfig, credentials *oauth2.Config) ([]byte, error) {
 	token, err := credentials.Exchange(context.Background(), email)
 	if err != nil {
 		return nil, fmt.Errorf("code exchange wrong: %s", err.Error())
@@ -117,7 +115,7 @@ func GetUserByEmail(email string, config falconConfig, credentials &oauth2.Confi
 	return user_data, nil
 }
 
-func GetLoggedInUser(cookies map[string][]string, config falconConfig, credentials &oauth2.Config) ([]byte, error) {
+func GetLoggedInUser(cookies map[string][]string, config falconConfig, credentials *oauth2.Config) ([]byte, error) {
 	// hash := cookies[COOKIE_NAME]
 	var hash string = ""
 	if hash == "" {
@@ -136,7 +134,7 @@ func GetLoggedInUser(cookies map[string][]string, config falconConfig, credentia
 	return user_data, nil
 }
 
-func Login(cookies map[string][]string, config falconConfig, credentials &oauth2.Config, w http.ResponseWriter, r *http.Request) ([]byte, error) {
+func Login(cookies map[string][]string, config falconConfig, credentials *oauth2.Config, w http.ResponseWriter, r *http.Request) ([]byte, error) {
 	user_data, err := GetLoggedInUser(cookies)
 	if err != nil {
 		return nil, fmt.Errorf("failed to login with given credentials: %s", err.Error())
