@@ -9,20 +9,33 @@ import (
 	"net/http"
 )
 
-func parseJSON(path string) (map[string]interface{}, error) {
-	var config map[string]interface{}
-	file, err := ioutil.ReadFile(path)
-	if err != nil {
-		return config, err
-	}
-	err = json.Unmarshal(file, &config)
-	if err != nil {
-		return config, err
-	}
-	return config, nil
+type falconConfig struct {
+	falconClientId string,
+	falconClientSecret string,
+	falconUrlAccessToken string,
+	falconUrlResourceOwnerToken string,
+	falconAccountsUrl string
 }
 
-var config, _ = parseJSON("config.json")
+func New(falconClientId, falconClientSecret, falconUrlAccessToken, falconResourceOwnerToken, falconAccountsUrl string) falconConfig {
+	config := falconConfig {falconClientId, falconClientSecret, falconUrlAccessToken, falconResourceOwnerToken, falconAccountsUrl}
+	return config
+}
+
+// func parseJSON(path string) (map[string]interface{}, error) {
+// 	var config map[string]interface{}
+// 	file, err := ioutil.ReadFile(path)
+// 	if err != nil {
+// 		return config, err
+// 	}
+// 	err = json.Unmarshal(file, &config)
+// 	if err != nil {
+// 		return config, err
+// 	}
+// 	return config, nil
+// }
+
+// var config, _ = parseJSON("config.json")
 
 var credentials = &oauth2.Config{
 	RedirectURL:  "",
