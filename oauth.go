@@ -68,7 +68,7 @@ func GetUserById(id string) ([]byte, error) {
 		return nil, fmt.Errorf("code exchange wrong: %s", err.Error())
 	}
 
-	user_data, err := make_request(resourceOwnerDetailsUrl+`/`+id, token)
+	user_data, err := MakeRequest(resourceOwnerDetailsUrl+`/`+id, token)
 	if err != nil {
 		return nil, fmt.Errorf("failed getting user info: %s", err.Error())
 	}
@@ -81,7 +81,7 @@ func GetUserByUsername(username string) ([]byte, error) {
 		return nil, fmt.Errorf("code exchange wrong: %s", err.Error())
 	}
 
-	user_data, err := make_request(resourceOwnerDetailsUrl+`/username/`+username, token)
+	user_data, err := MakeRequest(resourceOwnerDetailsUrl+`/username/`+username, token)
 	if err != nil {
 		return nil, fmt.Errorf("failed getting user info: %s", err.Error())
 	}
@@ -94,7 +94,7 @@ func GetUserByEmail(email string) ([]byte, error) {
 		return nil, fmt.Errorf("code exchange wrong: %s", err.Error())
 	}
 
-	user_data, err := make_request(resourceOwnerDetailsUrl+`/email/`+email, token)
+	user_data, err := MakeRequest(resourceOwnerDetailsUrl+`/email/`+email, token)
 	if err != nil {
 		return nil, fmt.Errorf("failed getting user info: %s", err.Error())
 	}
@@ -113,7 +113,7 @@ func GetLoggedInUser(cookies map[string][]string) ([]byte, error) {
 		return nil, fmt.Errorf("code exchange wrong: %s", err.Error())
 	}
 
-	user_data, err := make_request(resourceOwnerDetailsUrl+`/logged_in_user/`+hash, token)
+	user_data, err := MakeRequest(resourceOwnerDetailsUrl+`/logged_in_user/`+hash, token)
 	if err != nil {
 		return nil, fmt.Errorf("failed getting user info: %s", err.Error())
 	}
@@ -121,7 +121,7 @@ func GetLoggedInUser(cookies map[string][]string) ([]byte, error) {
 }
 
 func Login(cookies map[string][]string, w http.ResponseWriter, r *http.Request) ([]byte, error) {
-	user_data, err := get_logged_in_user(cookies)
+	user_data, err := GetLoggedInUser(cookies)
 	if err != nil {
 		return nil, fmt.Errorf("failed to login with given credentials: %s", err.Error())
 	}
