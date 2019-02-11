@@ -16,7 +16,7 @@ type falconConfig struct {
 	falconAccountsUrl      string
 }
 
-func Init(falconClientId, falconClientSecret, falconUrlAccessToken, falconUrlResourceOwner, falconAccountsUrl string) (falconConfig, *oauth2.Config) {
+func New(falconClientId, falconClientSecret, falconUrlAccessToken, falconUrlResourceOwner, falconAccountsUrl string) (falconConfig, *oauth2.Config) {
 	config := falconConfig{falconClientId, falconClientSecret, falconUrlAccessToken, falconUrlResourceOwner, falconAccountsUrl}
 
 	var credentials = &oauth2.Config{
