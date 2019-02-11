@@ -2,7 +2,6 @@ package falconClientGolang
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"golang.org/x/oauth2"
 	"io/ioutil"
@@ -17,7 +16,7 @@ type falconConfig struct {
 	falconAccountsUrl      string
 }
 
-func Init(falconClientId, falconClientSecret, falconUrlAccessToken, falconUrlResourceOwner, falconAccountsUrl string) falconConfig {
+func Init(falconClientId, falconClientSecret, falconUrlAccessToken, falconUrlResourceOwner, falconAccountsUrl string) (falconConfig, *oauth2.Config) {
 	config := falconConfig{falconClientId, falconClientSecret, falconUrlAccessToken, falconUrlResourceOwner, falconAccountsUrl}
 
 	var credentials = &oauth2.Config{
@@ -135,13 +134,13 @@ func GetLoggedInUser(cookies map[string][]string, config falconConfig, credentia
 }
 
 func Login(cookies map[string][]string, config falconConfig, credentials *oauth2.Config, w http.ResponseWriter, r *http.Request) ([]byte, error) {
-	user_data, err := GetLoggedInUser(cookies)
+	user_data, err := GetLoggedInUser(cookies, config, credentials)
 	if err != nil {
 		return nil, fmt.Errorf("failed to login with given credentials: %s", err.Error())
 	}
 
 	if user_data == nil {
-		http.Redirect(w, r, falconConfig.falconAccountsUrl+`/login?redirect=//`, http.StatusTemporaryRedirect)
+		http.Redirect(w, r, config.falconAccountsUrl+`/login?redirect=//`, http.StatusTemporaryRedirect)
 	}
 	return user_data, nil
 }
