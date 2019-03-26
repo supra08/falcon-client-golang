@@ -112,7 +112,7 @@ func GetLoggedInUser(config falconClientGolang, cookie string) (string, error) {
 }
 
 func Login(config falconClientGolang, w http.ResponseWriter, r *http.Request) (string, error) {
-	user_data, err := GetLoggedInUser(config, r)
+	user_data, err := GetLoggedInUser(config, "")
 	if err != nil {
 		return "", fmt.Errorf("failed to login with given credentials: %s", err.Error())
 	}
