@@ -94,10 +94,11 @@ func GetUserByEmail(email string, config falconClientGolang) (string, error) {
 	return user_data, nil
 }
 
-func GetLoggedInUser(config falconClientGolang, r *http.Request) (string, error) {
+func GetLoggedInUser(config falconClientGolang, cookie) (string, error) {
 	// hash := cookies[COOKIE_NAME]
 	// hash, _ := r.Cookie(COOKIE_NAME)
 	// fmt.Fprint(w, cookie)
+	fmt.Println(cookie)
 	var hash string = ""
 	if hash == "" {
 		return "", fmt.Errorf("cookie not found")
