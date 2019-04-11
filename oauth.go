@@ -99,7 +99,8 @@ func GetLoggedInUser(config falconClientGolang, cookie string) (string, error) {
 	// hash, _ := r.Cookie(COOKIE_NAME)
 	// fmt.Fprint(w, cookie)
 	fmt.Println(cookie)
-	var hash string = ""
+	var hash string = strings.Split(cookie, "=")[1].(string)
+	fmt.Println(hash)
 	if hash == "" {
 		return "", fmt.Errorf("cookie not found")
 	}
