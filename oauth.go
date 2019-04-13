@@ -72,13 +72,19 @@ func getTokenHandler(config falconClientGolang) {
 }
 
 func refreshToken(config falconClientGolang) {
-	getTokenHandler(config)
-	time.Sleep(time.Second * 3600)
-	refreshToken(config)
-	// Token, RefreshTime := getTokenHandler(falconClientGolang)
+	for true {
+		getTokenHandler(config)
+		time.Sleep(time.Second * 3600)
+	}
 }
 
 func getToken() string {
+	if TOKEN == "" {
+		time.Sleep(time.Second * 1)
+		fmt.Println(TOKEN)
+		return TOKEN
+	}
+	fmt.Println(TOKEN)
 	return TOKEN
 }
 
@@ -113,7 +119,7 @@ func GetLoggedInUser(config falconClientGolang, hash string) (string, error) {
 	// hash := cookies[COOKIE_NAME]
 	// hash, _ := r.Cookie(COOKIE_NAME)
 	// fmt.Fprint(w, cookie)
-	fmt.Println(hash)
+	// fmt.Println(hash)
 	// var hash string = strings.Split(cookie, "=")[1].(string)
 	// fmt.Println(hash)
 	if hash == "" {
