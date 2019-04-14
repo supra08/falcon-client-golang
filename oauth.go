@@ -15,7 +15,7 @@ type DataResponse struct {
 	ExpiresIn   int    `json:"expires_in"`
 }
 
-type falconClientGolang struct {
+type FalconClientGolang struct {
 	falconClientId         string
 	falconClientSecret     string
 	falconUrlAccessToken   string
@@ -24,7 +24,7 @@ type falconClientGolang struct {
 }
 
 func New(falconClientId, falconClientSecret, falconUrlAccessToken, falconUrlResourceOwner, falconAccountsUrl string) falconClientGolang {
-	config := falconClientGolang{falconClientId, falconClientSecret, falconUrlAccessToken, falconUrlResourceOwner, falconAccountsUrl}
+	config := &falconClientGolang{falconClientId, falconClientSecret, falconUrlAccessToken, falconUrlResourceOwner, falconAccountsUrl}
 	go refreshToken(config)
 	return config
 }
