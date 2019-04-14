@@ -23,8 +23,8 @@ type FalconClientGolang struct {
 	falconAccountsUrl      string
 }
 
-func New(falconClientId, falconClientSecret, falconUrlAccessToken, falconUrlResourceOwner, falconAccountsUrl string) falconClientGolang {
-	config := &falconClientGolang{falconClientId, falconClientSecret, falconUrlAccessToken, falconUrlResourceOwner, falconAccountsUrl}
+func New(falconClientId, falconClientSecret, falconUrlAccessToken, falconUrlResourceOwner, falconAccountsUrl string) FalconClientGolang {
+	config := FalconClientGolang{falconClientId, falconClientSecret, falconUrlAccessToken, falconUrlResourceOwner, falconAccountsUrl}
 	go refreshToken(config)
 	return config
 }
@@ -55,7 +55,7 @@ func makeRequest(url, token string) (string, error) {
 	return string(contents), nil
 }
 
-func getTokenHandler(config falconClientGolang) {
+func getTokenHandler(config FalconClientGolang) {
 	payload := strings.NewReader("client_id=" + config.falconClientId + "&client_secret=" + config.falconClientSecret + "&grant_type=client_credentials")
 	req, _ := http.NewRequest("POST", config.falconUrlAccessToken, payload)
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
@@ -71,7 +71,7 @@ func getTokenHandler(config falconClientGolang) {
 	// return string(response.AccessToken)
 }
 
-func refreshToken(config falconClientGolang) {
+func refreshToken(config FalconClientGolang) {
 	for true {
 		getTokenHandler(config)
 		time.Sleep(time.Second * 3600)
@@ -88,7 +88,7 @@ func getToken() string {
 	return TOKEN
 }
 
-func GetUserById(id string, config falconClientGolang) (string, error) {
+func GetUserById(id string, config FalconClientGolang) (string, error) {
 	token := getToken()
 	user_data, err := makeRequest(config.falconUrlResourceOwner+"id/"+id, token)
 	if err != nil {
@@ -97,7 +97,7 @@ func GetUserById(id string, config falconClientGolang) (string, error) {
 	return user_data, nil
 }
 
-func GetUserByUsername(username string, config falconClientGolang) (string, error) {
+func GetUserByUsername(username string, config FalconClientGolang) (string, error) {
 	token := getToken()
 	user_data, err := makeRequest(config.falconUrlResourceOwner+"username/"+username, token)
 	if err != nil {
@@ -106,7 +106,7 @@ func GetUserByUsername(username string, config falconClientGolang) (string, erro
 	return user_data, nil
 }
 
-func GetUserByEmail(email string, config falconClientGolang) (string, error) {
+func GetUserByEmail(email string, config FalconClientGolang) (string, error) {
 	token := getToken()
 	user_data, err := makeRequest(config.falconUrlResourceOwner+"email/"+email, token)
 	if err != nil {
@@ -115,7 +115,7 @@ func GetUserByEmail(email string, config falconClientGolang) (string, error) {
 	return user_data, nil
 }
 
-func GetLoggedInUser(config falconClientGolang, hash string) (string, error) {
+func GetLoggedInUser(config FalconClientGolang, hash string) (string, error) {
 	// hash := cookies[COOKIE_NAME]
 	// hash, _ := r.Cookie(COOKIE_NAME)
 	// fmt.Fprint(w, cookie)
@@ -133,7 +133,7 @@ func GetLoggedInUser(config falconClientGolang, hash string) (string, error) {
 	return user_data, nil
 }
 
-func Login(config falconClientGolang, w http.ResponseWriter, r *http.Request) (string, error) {
+func Login(config FalconClientGolang, w http.ResponseWriter, r *http.Request) (string, error) {
 	user_data, err := GetLoggedInUser(config, "")
 	if err != nil {
 		return "", fmt.Errorf("failed to login with given credentials: %s", err.Error())
